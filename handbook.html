@@ -1,0 +1,321 @@
+<!doctype html>
+<!--
+  Instructions for the people who use Sofric Captions.
+
+  Published to the public download page alongside the installers, so it can be sent to a
+  client as a link. Kept in the private repository and never edited in the public one.
+
+  English and Croatian sit side by side, as adjacent elements carrying data-en and data-hr,
+  as in Sofric Sort's handbook: when a sentence changes both versions are in front of you.
+  If you add a line in one language, add it in the other.
+
+  KEEP THIS IN STEP WITH THE APPLICATION. The keys come from ui/Transcript.svelte,
+  ui/Editor.svelte and ui/Timeline.svelte; the pictures in img/ are screenshots of the app
+  taken by a script on the demo video. Change the app and change this.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="How to caption a finished edit with Sofric Captions. Upute za korištenje programa Sofric Captions.">
+<title>Sofric Captions — Handbook / Upute</title>
+<link rel="icon" href="./icon.png">
+<style>
+  @font-face {
+    font-family: 'Archivo';
+    src: url('fonts/Archivo-var.woff2') format('woff2-variations');
+    font-weight: 100 900; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: 'Archivo';
+    src: url('fonts/Archivo-italic-var.woff2') format('woff2-variations');
+    font-weight: 100 900; font-style: italic; font-display: swap;
+  }
+  @font-face {
+    font-family: 'JetBrains Mono';
+    src: url('fonts/JetBrainsMono-var.woff2') format('woff2-variations');
+    font-weight: 100 800; font-style: normal; font-display: swap;
+  }
+  :root {
+    --ground: #faf9f8; --raised: #ffffff; --sunken: #f1f0ee;
+    --line: #dedcd8; --line-soft: #ebe9e6;
+    --text: #191a1d; --text-dim: #5f6169; --text-faint: #6a6c75;
+    --accent: #1f6fd0; --warn: #a8720d;
+    --shadow: 0 1px 2px rgba(20, 22, 28, .06), 0 8px 24px rgba(20, 22, 28, .05);
+    --display: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ground: #101014; --raised: #17181d; --sunken: #0b0b0e;
+      --line: #2b2c33; --line-soft: #212228;
+      --text: #e9e9ec; --text-dim: #9a9ca6; --text-faint: #878b98;
+      --accent: #5aa2ff; --warn: #e8b04a;
+      --shadow: 0 1px 2px rgba(0,0,0,.5), 0 10px 30px rgba(0,0,0,.35);
+      color-scheme: dark;
+    }
+  }
+  /* One language at a time. Both are always in the document, so the page works with
+     scripting disabled and prints in whichever language is showing. */
+  html[lang="en"] [data-hr], html[lang="hr"] [data-en] { display: none; }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--ground); color: var(--text);
+    font: 400 16px/1.62 var(--display); -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 22px 84px; }
+  .langbar { display: flex; gap: 6px; padding-top: 22px; }
+  .langbar button {
+    font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase;
+    padding: 7px 12px; border-radius: 6px; cursor: pointer;
+    background: transparent; color: var(--text-dim); border: 1px solid var(--line);
+  }
+  .langbar button[aria-pressed="true"] { background: var(--text); color: var(--ground); border-color: var(--text); }
+  header.top {
+    padding: 34px 0 26px; border-bottom: 2px solid var(--text);
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 18px;
+  }
+  header.top img { width: 64px; height: 64px; border-radius: 14px; }
+  .top h1 { margin: 0; font-weight: 700; font-size: clamp(30px, 6vw, 46px); letter-spacing: -0.032em; line-height: 1.04; flex: 1 1 320px; }
+  .top p { margin: 0; flex: 1 1 240px; color: var(--text-dim); font-size: 15px; max-width: 42ch; }
+  h2 {
+    margin: 56px 0 4px; font: 700 12px/1.3 var(--mono);
+    letter-spacing: .16em; text-transform: uppercase; color: var(--accent);
+  }
+  .lede { margin: 0 0 20px; font-size: 24px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.25; max-width: 32ch; }
+  h3 { margin: 26px 0 6px; font-size: 18px; letter-spacing: -0.01em; }
+  p, li { max-width: 70ch; }
+  p.note { color: var(--text-dim); }
+  strong { font-weight: 600; }
+  kbd {
+    font: 500 13px/1 var(--mono); display: inline-block; padding: 4px 7px 5px;
+    background: var(--raised); border: 1px solid var(--line); border-bottom-width: 2px;
+    border-radius: 5px; color: var(--text); white-space: nowrap;
+  }
+  ol.steps { list-style: none; margin: 0; padding: 0; }
+  ol.steps li {
+    display: grid; grid-template-columns: 40px 1fr; gap: 16px; padding: 18px 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  ol.steps li:first-child { border-top: 1px solid var(--line); }
+  .num { font: 700 13px/1 var(--mono); color: var(--accent); padding-top: 6px; }
+  ol.steps h3 { margin: 0 0 4px; font-size: 17px; }
+  ol.steps p { margin: 0; color: var(--text-dim); font-size: 15px; }
+  figure { margin: 22px 0; }
+  figure img { display: block; max-width: 100%; border-radius: 10px; border: 1px solid var(--line); box-shadow: var(--shadow); }
+  figcaption { margin-top: 8px; font-size: 13px; color: var(--text-faint); }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; }
+  .row figure { margin: 0; flex: 1 1 150px; }
+  .row img { width: 100%; }
+  table { border-collapse: collapse; width: 100%; max-width: 70ch; font-size: 15px; }
+  td { padding: 8px 10px 8px 0; border-top: 1px solid var(--line-soft); vertical-align: top; }
+  td:first-child { white-space: nowrap; width: 1%; padding-right: 18px; }
+  .callout {
+    margin: 22px 0; padding: 14px 18px; border-left: 3px solid var(--accent);
+    background: var(--raised); border-radius: 0 10px 10px 0; box-shadow: var(--shadow);
+  }
+  .callout p { margin: 0; }
+  footer { margin-top: 60px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--text-faint); font-size: 13px; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="langbar">
+    <button type="button" id="lang-en" aria-pressed="true" lang="en">English</button>
+    <button type="button" id="lang-hr" aria-pressed="false" lang="hr">Hrvatski</button>
+  </div>
+
+  <header class="top">
+    <img src="./icon.png" alt="">
+    <h1 data-en>Sofric Captions Handbook</h1>
+    <h1 data-hr>Sofric Captions — Upute</h1>
+    <p data-en>TikTok-style captions for your finished edits, made on your own computer.</p>
+    <p data-hr>Titlovi u stilu TikToka za tvoje gotove montaže, napravljeni na tvom računalu.</p>
+  </header>
+
+  <h2 data-en>The short version</h2>
+  <h2 data-hr>Ukratko</h2>
+  <p class="lede" data-en>Open the edit, transcribe, check the orange words, pick a look, export.</p>
+  <p class="lede" data-hr>Otvori montažu, prepoznaj govor, provjeri narančaste riječi, odaberi izgled, izvezi.</p>
+
+  <ol class="steps">
+    <li><span class="num">01</span><div>
+      <h3 data-en>Open your finished edit</h3>
+      <h3 data-hr>Otvori gotovu montažu</h3>
+      <p data-en>Drop it anywhere on the window, or press <strong>Open a video</strong>. Use the edit you are about to post: captions go on last. MP4, MOV, M4V, MKV and WebM open.</p>
+      <p data-hr>Ispusti je bilo gdje u prozor ili pritisni <strong>Otvori video</strong>. Koristi montažu koju ćeš objaviti: titlovi idu zadnji. Otvaraju se MP4, MOV, M4V, MKV i WebM.</p>
+    </div></li>
+    <li><span class="num">02</span><div>
+      <h3 data-en>Transcribe</h3>
+      <h3 data-hr>Prepoznaj govor</h3>
+      <p data-en>Press <strong>Transcribe</strong>. The first time, the app downloads its speech model (640 MB, once) and then carries straight on. After that everything runs on this computer, offline: nothing you edit is ever uploaded.</p>
+      <p data-hr>Pritisni <strong>Prepoznaj govor</strong>. Prvi put aplikacija preuzme svoj model govora (640 MB, samo jednom) i odmah nastavi. Nakon toga sve radi na ovom računalu, bez interneta: ništa što uređuješ ne šalje se nikamo.</p>
+    </div></li>
+    <li><span class="num">03</span><div>
+      <h3 data-en>Check the words</h3>
+      <h3 data-hr>Provjeri riječi</h3>
+      <p data-en>Words underlined in orange were heard with less certainty. <kbd>N</kbd> goes to the next one; <kbd>Enter</kbd> says it is right; a double-click (or <kbd>E</kbd>) corrects it.</p>
+      <p data-hr>Narančasto podcrtane riječi prepoznate su s manje sigurnosti. <kbd>N</kbd> ide na sljedeću; <kbd>Enter</kbd> kaže da je točna; dvostruki klik (ili <kbd>E</kbd>) je ispravlja.</p>
+    </div></li>
+    <li><span class="num">04</span><div>
+      <h3 data-en>Choose a look</h3>
+      <h3 data-hr>Odaberi izgled</h3>
+      <p data-en>Pick a preset on the right, then change anything you like. Drag the captions on the video to move them.</p>
+      <p data-hr>Odaberi predložak desno, a zatim promijeni što god želiš. Povuci titlove na videu da ih premjestiš.</p>
+    </div></li>
+    <li><span class="num">05</span><div>
+      <h3 data-en>Export</h3>
+      <h3 data-hr>Izvezi</h3>
+      <p data-en><strong>Export video</strong> writes <em>“your video - captions.mp4”</em> beside your edit. Your edit itself is never changed.</p>
+      <p data-hr><strong>Izvezi video</strong> zapiše <em>„tvoj video - captions.mp4”</em> uz tvoju montažu. Sama montaža se nikad ne mijenja.</p>
+    </div></li>
+  </ol>
+
+  <figure>
+    <img src="img/editor.png" alt="" width="1440" height="900">
+    <figcaption data-en>The editor: the words on the left, the video with its captions in the middle, the look on the right, and the timeline along the bottom.</figcaption>
+    <figcaption data-hr>Uređivač: riječi lijevo, video s titlovima u sredini, izgled desno i vremenska traka na dnu.</figcaption>
+  </figure>
+
+  <h2 data-en>Checking and correcting words</h2>
+  <h2 data-hr>Provjera i ispravljanje riječi</h2>
+  <p data-en>Click a word to jump to it in the video. To correct it, double-click it (or select it and press <kbd>E</kbd>), type, and press <kbd>Enter</kbd>.</p>
+  <p data-hr>Klikni riječ da skočiš na nju u videu. Za ispravak dvaput je klikni (ili je odaberi i pritisni <kbd>E</kbd>), upiši i pritisni <kbd>Enter</kbd>.</p>
+  <ul>
+    <li data-en><strong>One word for one</strong> keeps its exact timing: the timing is what the recogniser got right even when the spelling was wrong.</li>
+    <li data-hr><strong>Jedna riječ umjesto jedne</strong> zadržava točno vrijeme: vrijeme je ono što je prepoznavanje pogodilo i kad je riječ krivo napisana.</li>
+    <li data-en><strong>Several words for one</strong> share its time between them.</li>
+    <li data-hr><strong>Više riječi umjesto jedne</strong> dijele njeno vrijeme.</li>
+    <li data-en><strong>Nothing</strong> hides the word. <kbd>Delete</kbd> hides or shows a word, too; hidden words are kept, crossed out, and never shown on the video.</li>
+    <li data-hr><strong>Prazno</strong> sakrije riječ. <kbd>Delete</kbd> također skriva ili vraća riječ; skrivene riječi ostaju, prekrižene, i nikad se ne prikazuju na videu.</li>
+    <li data-en><strong>Song lyrics</strong>: <kbd>Shift</kbd>+<kbd>Delete</kbd> hides the whole caption a word is in; again brings it back.</li>
+    <li data-hr><strong>Tekst pjesme</strong>: <kbd>Shift</kbd>+<kbd>Delete</kbd> sakrije cijeli titl u kojem je riječ; ponovno ga vraća.</li>
+  </ul>
+  <div class="callout">
+    <p data-en><strong>The fast way through a transcript</strong> is <kbd>N</kbd>, look, then <kbd>Enter</kbd> if it is right or <kbd>E</kbd> to fix it. The button at the top says how many unsure words are left.</p>
+    <p data-hr><strong>Najbrži prolaz kroz tekst</strong> je <kbd>N</kbd>, pogledaj, pa <kbd>Enter</kbd> ako je točno ili <kbd>E</kbd> za ispravak. Gumb na vrhu kaže koliko je nesigurnih riječi ostalo.</p>
+  </div>
+
+  <h2 data-en>Where captions split</h2>
+  <h2 data-hr>Gdje se titlovi lome</h2>
+  <p data-en>The app starts a new caption at a pause, at the end of a sentence, and when the caption has as many words as the style allows (<em>Words at once</em>). Lines are balanced, and a short word is never left alone on a line.</p>
+  <p data-hr>Aplikacija počinje novi titl na stanci, na kraju rečenice i kad titl ima onoliko riječi koliko stil dopušta (<em>Riječi odjednom</em>). Redovi su uravnoteženi i kratka riječ nikad ne ostaje sama u redu.</p>
+  <p data-en>To decide yourself: select a word and press <kbd>S</kbd> to start a new caption there, or <kbd>J</kbd> to keep it with the caption before. Press the same key again to let the app decide. The blue mark beside a word shows where you have done either.</p>
+  <p data-hr>Ako želiš sam odlučiti: odaberi riječ i pritisni <kbd>S</kbd> za novi titl od nje ili <kbd>J</kbd> da ostane s prethodnim titlom. Ista tipka ponovno vraća odluku aplikaciji. Plava oznaka uz riječ pokazuje gdje si to učinio.</p>
+
+  <h2 data-en>Timing</h2>
+  <h2 data-hr>Vrijeme</h2>
+  <figure>
+    <img src="img/timeline.png" alt="">
+    <figcaption data-en>The timeline: the sound, every word where it is said, and the captions as bands underneath. The yellow line is the playhead.</figcaption>
+    <figcaption data-hr>Vremenska traka: zvuk, svaka riječ tamo gdje je izgovorena i titlovi kao trake ispod. Žuta crta je trenutno mjesto.</figcaption>
+  </figure>
+  <ul>
+    <li data-en><strong>Drag a word's edge</strong> to change when it starts or ends. Two words that touch share the edge and move together; hold <kbd>Alt</kbd> to pull them apart. Edges snap to the playhead and to other words.</li>
+    <li data-hr><strong>Povuci rub riječi</strong> da promijeniš kad počinje ili završava. Dvije riječi koje se dodiruju dijele rub i miču se zajedno; drži <kbd>Alt</kbd> da ih razdvojiš. Rubovi se lijepe za trenutno mjesto i za druge riječi.</li>
+    <li data-en><strong>Drag the middle of a word</strong> to slide it into a gap.</li>
+    <li data-hr><strong>Povuci sredinu riječi</strong> da je pomakneš u prazninu.</li>
+    <li data-en><kbd>[</kbd> and <kbd>]</kbd> put the selected word's start or end exactly at the playhead.</li>
+    <li data-hr><kbd>[</kbd> i <kbd>]</kbd> stavljaju početak ili kraj odabrane riječi točno na trenutno mjesto.</li>
+    <li data-en>Click empty space to move the playhead. The mouse wheel zooms; with <kbd>Shift</kbd> it scrolls.</li>
+    <li data-hr>Klik u prazno pomiče trenutno mjesto. Kotačić miša zumira; uz <kbd>Shift</kbd> pomiče traku.</li>
+  </ul>
+  <p class="note" data-en>Every change can be undone with <kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>⌘</kbd>+<kbd>Z</kbd> on a Mac), and is saved by itself a moment later.</p>
+  <p class="note" data-hr>Svaka se promjena može poništiti s <kbd>Ctrl</kbd>+<kbd>Z</kbd> (<kbd>⌘</kbd>+<kbd>Z</kbd> na Macu) i sama se sprema trenutak kasnije.</p>
+
+  <h2 data-en>The look</h2>
+  <h2 data-hr>Izgled</h2>
+  <div class="row">
+    <figure><img src="img/preview-boldpop.png" alt=""><figcaption>Bold Pop</figcaption></figure>
+    <figure><img src="img/preview-karaoke.png" alt=""><figcaption>Karaoke Box</figcaption></figure>
+    <figure><img src="img/preview-racing.png" alt=""><figcaption data-en>Racing</figcaption><figcaption data-hr>Utrka</figcaption></figure>
+    <figure><img src="img/preview-neon.png" alt=""><figcaption>Neon</figcaption></figure>
+  </div>
+  <p data-en>Seven presets to start from: <strong>Bold Pop, Karaoke Box, Clean, Racing, Neon, Minimal</strong> and <strong>Sofric</strong>. Under them is every part of the look, in sections that fold away: the font and its size, the colour of words not said yet, being said and already said, how the word being said stands out, outline, shadow, glow, a background, lines and timing, position and animation.</p>
+  <p data-hr>Sedam predložaka za početak: <strong>Bold Pop, Karaoke, Čisto, Utrka, Neon, Minimalno</strong> i <strong>Sofric</strong>. Ispod njih je svaki dio izgleda, u odjeljcima koji se sklapaju: font i veličina, boja riječi koje još nisu izgovorene, koja se izgovara i već izgovorenih, kako se ističe riječ koja se izgovara, obrub, sjena, sjaj, pozadina, redovi i vrijeme, položaj i animacija.</p>
+  <ul>
+    <li data-en><strong>Your own presets</strong>: <em>Save as a new preset…</em> keeps the current look under a name. Changing or deleting a preset never changes a video already captioned: each video keeps its own copy of its look.</li>
+    <li data-hr><strong>Tvoji predlošci</strong>: <em>Spremi kao novi predložak…</em> čuva trenutni izgled pod imenom. Promjena ili brisanje predloška nikad ne mijenja već titlovani video: svaki video čuva svoju kopiju izgleda.</li>
+    <li data-en><strong>Position</strong>: drag the captions on the video; they snap to the middle. <em>Show where TikTok and Reels cover the video</em> marks where those apps put their own buttons and text.</li>
+    <li data-hr><strong>Položaj</strong>: povuci titlove na videu; lijepe se za sredinu. <em>Prikaži gdje TikTok i Reels prekrivaju video</em> označava gdje te aplikacije stavljaju svoje gumbe i tekst.</li>
+    <li data-en>A new video starts with the look your last one ended with.</li>
+    <li data-hr>Novi video počinje s izgledom s kojim je završio prošli.</li>
+  </ul>
+
+  <h2 data-en>Exporting</h2>
+  <h2 data-hr>Izvoz</h2>
+  <p data-en><strong>Export video</strong> burns the captions into a new MP4 beside your edit, <em>“your video - captions.mp4”</em> — or <em>“… (2).mp4”</em> if that name is taken; nothing is ever replaced. The sound is copied as it is. The little arrow beside the button opens the options:</p>
+  <p data-hr><strong>Izvezi video</strong> utisne titlove u novi MP4 uz tvoju montažu, <em>„tvoj video - captions.mp4”</em> — ili <em>„… (2).mp4”</em> ako je to ime zauzeto; ništa se nikad ne zamjenjuje. Zvuk se kopira kakav jest. Mala strelica pokraj gumba otvara mogućnosti:</p>
+  <ul>
+    <li data-en><strong>Size</strong>: within 1080×1920, best for TikTok and Reels, or the video's own size.</li>
+    <li data-hr><strong>Veličina</strong>: do 1080×1920, najbolje za TikTok i Reels, ili veličina samog videa.</li>
+    <li data-en><strong>A subtitle file</strong> (.srt or .vtt) for YouTube and other places that show subtitles themselves: the same captions at the same times, in your spelling.</li>
+    <li data-hr><strong>Datoteka titlova</strong> (.srt ili .vtt) za YouTube i druga mjesta koja sama prikazuju titlove: isti titlovi u isto vrijeme, kako si ih napisao.</li>
+  </ul>
+  <p class="note" data-en>Your corrections are saved beside the video as <em>“your video.mp4.captions.json”</em>. Keep it with the video and the captions come back when you open it again. If that folder cannot be written to, they are kept in the app's own folder instead.</p>
+  <p class="note" data-hr>Tvoji ispravci spremaju se uz video kao <em>„tvoj video.mp4.captions.json”</em>. Drži ga uz video i titlovi će se vratiti kad ga ponovno otvoriš. Ako se u tu mapu ne može pisati, čuvaju se u mapi same aplikacije.</p>
+
+  <h2 data-en>Keys</h2>
+  <h2 data-hr>Tipke</h2>
+  <table>
+    <tr><td><kbd>Space</kbd></td><td data-en>Play / pause</td><td data-hr>Pokreni / pauziraj</td></tr>
+    <tr><td><kbd>N</kbd> &nbsp; <kbd>Shift</kbd>+<kbd>N</kbd></td><td data-en>Next / previous unsure word</td><td data-hr>Sljedeća / prethodna nesigurna riječ</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td data-en>The selected word is right</td><td data-hr>Odabrana riječ je točna</td></tr>
+    <tr><td><kbd>E</kbd> &nbsp; <kbd>F2</kbd></td><td data-en>Correct the selected word</td><td data-hr>Ispravi odabranu riječ</td></tr>
+    <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td data-en>Previous / next word</td><td data-hr>Prethodna / sljedeća riječ</td></tr>
+    <tr><td><kbd>S</kbd></td><td data-en>Start a new caption at this word</td><td data-hr>Novi titl od ove riječi</td></tr>
+    <tr><td><kbd>J</kbd></td><td data-en>Keep this word with the caption before</td><td data-hr>Zadrži riječ uz prethodni titl</td></tr>
+    <tr><td><kbd>Delete</kbd></td><td data-en>Hide or show this word</td><td data-hr>Sakrij ili vrati ovu riječ</td></tr>
+    <tr><td><kbd>Shift</kbd>+<kbd>Delete</kbd></td><td data-en>Hide or show this whole caption</td><td data-hr>Sakrij ili vrati cijeli titl</td></tr>
+    <tr><td><kbd>[</kbd> &nbsp; <kbd>]</kbd></td><td data-en>Start / end of the word at the playhead</td><td data-hr>Početak / kraj riječi na trenutno mjesto</td></tr>
+    <tr><td><kbd>Ctrl</kbd>+<kbd>Z</kbd> &nbsp; <kbd>Ctrl</kbd>+<kbd>Y</kbd></td><td data-en>Undo / redo (<kbd>⌘</kbd> on a Mac)</td><td data-hr>Poništi / ponovi (<kbd>⌘</kbd> na Macu)</td></tr>
+  </table>
+
+  <h2 data-en>Languages</h2>
+  <h2 data-hr>Jezici</h2>
+  <p data-en>Sofric Captions is built and measured for <strong>English</strong> first. Its speech model also understands Croatian, German, Italian and Slovenian and will write them, but how accurate it is in those languages has not been measured yet, so check the words more carefully there. They will be offered properly one by one, each after it has been measured on real recordings.</p>
+  <p data-hr>Sofric Captions je napravljen i izmjeren prvo za <strong>engleski</strong>. Njegov model govora razumije i hrvatski, njemački, talijanski i slovenski i pisat će ih, ali koliko je točan na tim jezicima još nije izmjereno, pa tamo pažljivije provjeri riječi. Ponudit će se jedan po jedan, svaki nakon što bude izmjeren na stvarnim snimkama.</p>
+
+  <h2 data-en>If something does not work</h2>
+  <h2 data-hr>Ako nešto ne radi</h2>
+  <ul>
+    <li data-en><strong>“This computer cannot read this video's picture”</strong>: export the edit from your editor as H.264 MP4 and open that.</li>
+    <li data-hr><strong>„Ovo računalo ne može pročitati sliku ovog videa”</strong>: izvezi montažu iz programa za montažu kao H.264 MP4 i otvori nju.</li>
+    <li data-en><strong>The model download stopped</strong>: press <em>Try again</em>; it carries on from where it stopped.</li>
+    <li data-hr><strong>Preuzimanje modela je stalo</strong>: pritisni <em>Pokušaj ponovno</em>; nastavlja odakle je stalo.</li>
+    <li data-en><strong>Slow, or anything else</strong>: open <strong>Diagnostics</strong> (bottom left of the first screen), press <em>Run the checks</em>, then <em>Save report…</em> and send the file. It holds facts about the computer and how long jobs took — never your videos or your words.</li>
+    <li data-hr><strong>Sporo, ili bilo što drugo</strong>: otvori <strong>Dijagnostiku</strong> (dolje lijevo na prvom zaslonu), pritisni <em>Pokreni provjere</em>, zatim <em>Spremi izvještaj…</em> i pošalji datoteku. U njoj su podaci o računalu i koliko su poslovi trajali — nikad tvoji videi ni tvoje riječi.</li>
+  </ul>
+  <figure>
+    <img src="img/diagnostics.png" alt="" width="1440" height="900">
+    <figcaption data-en>Diagnostics: every check run with the app's own code, judged against what the app needs.</figcaption>
+    <figcaption data-hr>Dijagnostika: svaka provjera radi s kodom same aplikacije i ocjenjuje se prema onome što aplikacija treba.</figcaption>
+  </figure>
+
+  <footer>
+    <p data-en>Sofric Captions · Speech recognition: Parakeet TDT 0.6B v3 by NVIDIA (CC-BY-4.0) · <a href="./index.html">Download</a></p>
+    <p data-hr>Sofric Captions · Prepoznavanje govora: Parakeet TDT 0.6B v3, NVIDIA (CC-BY-4.0) · <a href="./index.html">Preuzimanje</a></p>
+  </footer>
+</div>
+
+<script>
+  // English or Croatian: the reader's choice if they made one here, else their browser's.
+  const pick = (lang) => {
+    document.documentElement.lang = lang
+    document.getElementById('lang-en').setAttribute('aria-pressed', String(lang === 'en'))
+    document.getElementById('lang-hr').setAttribute('aria-pressed', String(lang === 'hr'))
+    try { localStorage.setItem('handbook-lang', lang) } catch { /* not remembered */ }
+  }
+  let saved = null
+  try { saved = localStorage.getItem('handbook-lang') } catch { /* private window */ }
+  const fromUrl = new URLSearchParams(location.search).get('lang')
+  pick(fromUrl === 'hr' || fromUrl === 'en' ? fromUrl : saved ?? (/^hr\b/i.test(navigator.language) ? 'hr' : 'en'))
+  document.getElementById('lang-en').addEventListener('click', () => pick('en'))
+  document.getElementById('lang-hr').addEventListener('click', () => pick('hr'))
+</script>
+</body>
+</html>
